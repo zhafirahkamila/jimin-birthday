@@ -1,11 +1,12 @@
 /* ============================================================
    A JOURNEY THROUGH JIMIN — MAIN BEHAVIOR
    ------------------------------------------------------------
-   This file runs four small effects:
-     1. LOADER FADE             — hides the opening curtain on load
-     2. REVEAL ON SCROLL        — fades sections in as you scroll
-     3. DUST PARTICLES          — the floating cinematic dust canvas
-     4. CINEMATIC ENDING SEQUENCE — staggered final phases + verse
+   This file runs three small effects:
+     1. LOADER FADE         — hides the opening curtain on load
+     2. REVEAL ON SCROLL    — fades sections in as you scroll
+     3. DUST PARTICLES      — the floating cinematic dust canvas
+     4. LIGHTBOX            — click any photo to zoom in
+     5. FINAL FADE          — dims the page once you reach the end
 
    Each block is independent — delete one and the rest still work.
    ============================================================ */
@@ -125,7 +126,32 @@
 
 
   /* ----------------------------------------------------------
-     4. CINEMATIC ENDING SEQUENCE
+     4. LIGHTBOX — click a polaroid or film frame to view full size.
+     ---------------------------------------------------------- */
+  const lightbox = document.getElementById('lightbox');
+  const lbImg    = document.getElementById('lightbox-img');
+  if (lightbox && lbImg) {
+    document.querySelectorAll('.polaroid img, .moment-frame img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        lbImg.src = img.src;
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden', 'false');
+      });
+    });
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      lbImg.src = '';
+    }
+    lightbox.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  }
+
+
+  /* ----------------------------------------------------------
+     5. CINEMATIC ENDING SEQUENCE
         ------------------------------------------------------------
         When the moon-phase row enters the viewport, play the
         staggered phase fade-in (CSS-driven via .playing) and then
