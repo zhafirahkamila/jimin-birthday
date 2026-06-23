@@ -883,10 +883,10 @@ a      { color: inherit; text-decoration: none; }
   animation: phaseFade 1.2s var(--ease) forwards;
 }
 .moon-phase-row.playing .phase-1 { animation-delay: 0.00s; }
-.moon-phase-row.playing .phase-2 { animation-delay: 0.95s; }
-.moon-phase-row.playing .phase-3 { animation-delay: 1.90s; }
-.moon-phase-row.playing .phase-4 { animation-delay: 2.85s; }
-.moon-phase-row.playing .phase-5 { animation-delay: 3.80s; }
+.moon-phase-row.playing .phase-2 { animation-delay: 0.85s; }
+.moon-phase-row.playing .phase-3 { animation-delay: 1.80s; }
+.moon-phase-row.playing .phase-4 { animation-delay: 2.75s; }
+.moon-phase-row.playing .phase-5 { animation-delay: 3.70s; }
 
 /* After the full moon appears, give it a continuous soft glow. */
 .moon-phase-row.playing .phase-3 {
