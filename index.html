@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A Journey Through Jimin — a cinematic black-and-white tribute exhibition for Park Jimin's birthday." />
+  <title>A Journey Through Jimin</title>
+
+  <!-- ============================================================
+       HOW TO CUSTOMIZE THIS WEBSITE
+       ------------------------------------------------------------
+       PHOTOS   : search "REPLACE PHOTO" — swap the src=""
+       VIDEO    : search "REPLACE VIDEO" — change the YouTube ID
+                  on data-youtube-id="hoUkD2jxZhk"
+       TEXT     : search "EDIT TEXT" — change era titles, captions
+       NEW ERA  : search "ADD NEW ERA" — copy that whole <section>
+                  block, paste it after, and change the content
+       WISHES   : visitors write them on the page;
+                  they are saved in their own browser only
+                  (no server, no account, no internet needed).
+
+       All photos are turned black-and-white automatically by CSS,
+       so any image you use will match the film aesthetic.
+
+       FILES IN THIS PROJECT
+       ------------------------------------------------------------
+         index.html            — this file (the content)
+         css/style.css         — visual design + layout
+         css/animations.css    — film grain, dust, transitions
+         js/main.js            — loader, dust, scroll reveal, lightbox
+         js/video-modal.js     — "Watch The Journey" video player
+         js/wishes.js          — guestbook (localStorage)
+         assets/images/        — drop your own photos here (optional)
+       ============================================================ -->
+
+  <!-- Google Fonts: Cormorant Garamond, Playfair Display, Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets (relative paths — work on GitHub Pages, Netlify, Canva, etc.) -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CINEMATIC OVERLAYS — grain + dust + vignette
+       ============================================================ -->
+  <div class="grain" aria-hidden="true"></div>
+  <canvas id="dust" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       MOON-PHASE SYMBOL LIBRARY
+       ------------------------------------------------------------
+       Five phases of Jimin's tattoo, drawn as pure SVG symbols.
+       Each phase = bright ivory disc + craters + a shadow disc
+       whose horizontal offset determines the phase.
+       Reused everywhere via <svg class="phase"><use href="#phase-N"/></svg>
+       ============================================================ -->
+  <svg class="phase-defs" aria-hidden="true" width="0" height="0" style="position:absolute">
+    <defs>
+      <radialGradient id="phaseDisc" cx="38%" cy="36%" r="68%">
+        <stop offset="0%"  stop-color="#F5F3EE"/>
+        <stop offset="60%" stop-color="#cfcdc7"/>
+        <stop offset="100%" stop-color="#7e7e7e"/>
+      </radialGradient>
+      <filter id="phaseGrain" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="2" seed="3" result="noise"/>
+        <feColorMatrix in="noise" type="matrix"
+          values="0 0 0 0 .85  0 0 0 0 .82  0 0 0 0 .78  0 0 0 .35 0"/>
+        <feComposite in2="SourceGraphic" operator="in"/>
+      </filter>
+
+      <!-- Phase 1 — waxing crescent (thin, shadow heavy from right) -->
+      <symbol id="phase-1" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="url(#phaseDisc)"/>
+        <circle cx="120" cy="92"  r="9" fill="#5a5a5a" opacity=".35"/>
+        <circle cx="82"  cy="118" r="6" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="108" cy="132" r="4" fill="#5a5a5a" opacity=".28"/>
+        <circle cx="72"  cy="84"  r="5" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="150" cy="100" r="78" fill="#0A0A0A"/>
+        <rect width="100%" height="100%" filter="url(#phaseGrain)" opacity=".55"/>
+      </symbol>
+
+      <!-- Phase 2 — waxing gibbous (half-ish, shadow narrower from right) -->
+      <symbol id="phase-2" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="url(#phaseDisc)"/>
+        <circle cx="118" cy="90"  r="9" fill="#5a5a5a" opacity=".35"/>
+        <circle cx="82"  cy="118" r="6" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="110" cy="130" r="4" fill="#5a5a5a" opacity=".28"/>
+        <circle cx="70"  cy="80"  r="5" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="130" cy="100" r="78" fill="#0A0A0A"/>
+        <rect width="100%" height="100%" filter="url(#phaseGrain)" opacity=".55"/>
+      </symbol>
+
+      <!-- Phase 3 — full moon (no shadow) -->
+      <symbol id="phase-3" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="url(#phaseDisc)"/>
+        <circle cx="120" cy="88"  r="9" fill="#5a5a5a" opacity=".35"/>
+        <circle cx="78"  cy="112" r="6" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="105" cy="130" r="4" fill="#5a5a5a" opacity=".25"/>
+        <circle cx="70"  cy="82"  r="5" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="132" cy="118" r="3" fill="#5a5a5a" opacity=".25"/>
+        <rect width="100%" height="100%" filter="url(#phaseGrain)" opacity=".55"/>
+      </symbol>
+
+      <!-- Phase 4 — waning gibbous (shadow narrower from left) -->
+      <symbol id="phase-4" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="url(#phaseDisc)"/>
+        <circle cx="82"  cy="92"  r="9" fill="#5a5a5a" opacity=".35"/>
+        <circle cx="118" cy="118" r="6" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="90"  cy="132" r="4" fill="#5a5a5a" opacity=".28"/>
+        <circle cx="128" cy="80"  r="5" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="70" cy="100"  r="78" fill="#0A0A0A"/>
+        <rect width="100%" height="100%" filter="url(#phaseGrain)" opacity=".55"/>
+      </symbol>
+
+      <!-- Phase 5 — waning crescent (thin, shadow heavy from left) -->
+      <symbol id="phase-5" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="url(#phaseDisc)"/>
+        <circle cx="80"  cy="92"  r="9" fill="#5a5a5a" opacity=".35"/>
+        <circle cx="118" cy="118" r="6" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="92"  cy="132" r="4" fill="#5a5a5a" opacity=".28"/>
+        <circle cx="128" cy="84"  r="5" fill="#5a5a5a" opacity=".3"/>
+        <circle cx="50"  cy="100" r="78" fill="#0A0A0A"/>
+        <rect width="100%" height="100%" filter="url(#phaseGrain)" opacity=".55"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ============================================================
+       OPENING LOADER
+       ============================================================ -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-phases" aria-hidden="true">
+      <svg class="phase"><use href="#phase-1"/></svg>
+      <svg class="phase"><use href="#phase-2"/></svg>
+      <svg class="phase"><use href="#phase-3"/></svg>
+      <svg class="phase"><use href="#phase-4"/></svg>
+      <svg class="phase"><use href="#phase-5"/></svg>
+    </div>
+    <div class="loader-mark">A Journey Through Jimin</div>
+    <div class="loader-line"></div>
+  </div>
+
+
+  <!-- ============================================================
+       SECTION 1 · HERO
+       ============================================================ -->
+  <header class="hero" id="opening">
+
+    <!-- The drifting moon (pure SVG — no image needed). -->
+    <svg class="hero-moon" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="moonGrad" cx="35%" cy="35%" r="65%">
+          <stop offset="0%"   stop-color="#F5F3EE"/>
+          <stop offset="100%" stop-color="#9a9a9a"/>
+        </radialGradient>
+      </defs>
+      <!-- The bright disc. -->
+      <circle cx="100" cy="100" r="80" fill="url(#moonGrad)" />
+      <!-- A few faint craters. -->
+      <circle cx="125" cy="92"  r="9"  fill="#7a7a7a" opacity=".4"  />
+      <circle cx="80"  cy="115" r="6"  fill="#7a7a7a" opacity=".35" />
+      <circle cx="105" cy="130" r="4"  fill="#7a7a7a" opacity=".3"  />
+      <circle cx="70"  cy="85"  r="5"  fill="#7a7a7a" opacity=".3"  />
+      <!-- The shadow disc that animates across — simulates the lunar phase. -->
+      <circle cx="125" cy="100" r="78" fill="#0A0A0A">
+        <animate attributeName="cx" values="125;90;130;125" dur="22s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+
+    <!-- Three small drifting phases — the tattoo motif scattered across the hero. -->
+    <svg class="hero-phase hero-phase-a" aria-hidden="true"><use href="#phase-1"/></svg>
+    <svg class="hero-phase hero-phase-b" aria-hidden="true"><use href="#phase-3"/></svg>
+    <svg class="hero-phase hero-phase-c" aria-hidden="true"><use href="#phase-5"/></svg>
+
+    <!-- EDIT TEXT: hero eyebrow -->
+    <div class="hero-eyebrow">A Tribute Exhibition</div>
+
+    <!-- EDIT TEXT: hero title (one <span> per word for staggered animation) -->
+    <h1 class="hero-title">
+      <span>A&nbsp;Journey</span>
+      <span>Through</span>
+      <span>—</span>
+      <span>Jimin</span>
+    </h1>
+
+    <div class="hero-rule"></div>
+
+    <!-- EDIT TEXT: hero subtitle -->
+    <p class="hero-sub">
+      A collection of memories, music, and moments<br/>
+      that made us fall in love with Park Jimin.
+    </p>
+
+    <!-- EDIT TEXT: birthday date -->
+    <div class="hero-date">13 · October · 1995</div>
+
+    <div class="hero-scroll">Begin the journey</div>
+  </header>
+
+
+  <!-- ============================================================
+       MOON-PHASE DIVIDER
+       ============================================================ -->
+  <div class="moon-divider reveal" aria-hidden="true">
+    <span class="moon-divider-line"></span>
+    <svg class="phase"><use href="#phase-1"/></svg>
+    <svg class="phase"><use href="#phase-2"/></svg>
+    <svg class="phase"><use href="#phase-3"/></svg>
+    <svg class="phase"><use href="#phase-4"/></svg>
+    <svg class="phase"><use href="#phase-5"/></svg>
+    <span class="moon-divider-line"></span>
+  </div>
+
+
+  <!-- ============================================================
+       SECTION 2 · WATCH THE JOURNEY
+       ------------------------------------------------------------
+       REPLACE VIDEO: to change the video, edit the
+       data-youtube-id below to a different YouTube video ID.
+       For example, https://youtu.be/ABCDE1234 → use "ABCDE1234".
+       ============================================================ -->
+  <section class="section journey" id="journey">
+    <div class="section-head reveal" style="text-align:center;">
+      <span class="section-label">Chapter I</span>
+      <h2 class="section-title">Watch The <em>Journey</em></h2>
+      <p class="section-sub" style="margin-left:auto; margin-right:auto;">
+        A cinematic short, played without ever leaving this page.
+      </p>
+    </div>
+
+    <!-- The poster — click anywhere on it to open the video modal. -->
+    <div
+      class="video-poster reveal"
+      role="button"
+      tabindex="0"
+      aria-label="Play the journey video"
+      data-youtube-id="hoUkD2jxZhk"
+    >
+      <div class="video-poster-bg"></div>
+      <div class="video-poster-grain"></div>
+      <div class="video-poster-label">Featured Film · 2026</div>
+      <div class="video-poster-title">
+        A short film of the moments that made us fall in love with him.
+      </div>
+      <button class="video-play" aria-hidden="true" tabindex="-1">▶</button>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       MOON-PHASE DIVIDER
+       ============================================================ -->
+  <div class="moon-divider reveal" aria-hidden="true">
+    <span class="moon-divider-line"></span>
+    <svg class="phase"><use href="#phase-1"/></svg>
+    <svg class="phase"><use href="#phase-2"/></svg>
+    <svg class="phase"><use href="#phase-3"/></svg>
+    <svg class="phase"><use href="#phase-4"/></svg>
+    <svg class="phase"><use href="#phase-5"/></svg>
+    <span class="moon-divider-line"></span>
+  </div>
+
+
+  <!-- The modal that plays the video INSIDE the page (controlled by js/video-modal.js). -->
+  <div class="video-modal" id="video-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Video player">
+    <div class="video-modal-frame">
+      <button class="video-modal-close" aria-label="Close video">Close ✕</button>
+      <!-- The iframe src is set by JavaScript when the modal opens.
+           Leave src empty so YouTube doesn't preload until requested. -->
+      <iframe
+        id="video-iframe"
+        title="A Journey Through Jimin — featured film"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       SECTION 3 · JIMIN MEMORY GALLERY
+       ------------------------------------------------------------
+       Ten era blocks in chronological order. Each block has:
+         - a heading (era number + era name)
+         - an italic caption
+         - three polaroid photos
+         - a horizontally scrolling film strip of moments
+
+       ADD NEW ERA: to add an 11th era, copy ANY entire
+       <article class="gallery-era reveal"> block below, paste
+       it just before </section>, and change the heading, caption,
+       and image URLs.
+       ============================================================ -->
+  <section class="section" id="gallery">
+    <div class="section-head reveal" style="text-align:center;">
+      <span class="section-label">Chapter II</span>
+      <h2 class="section-title">Memory <em>Gallery</em></h2>
+      <p class="section-sub" style="margin-left:auto; margin-right:auto;">
+        Ten chapters. Ten quiet rooms in the museum of a life beautifully lived.
+      </p>
+    </div>
+
+
+    <!-- ========== ERA 1 · CHILDHOOD ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">I</span>
+        <!-- EDIT TEXT: era title -->
+        <h3 class="era-heading-title">Childhood</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <!-- EDIT TEXT: era caption -->
+      <p class="era-caption">Busan, sea air, and a boy whose smile arrived long before the world was watching.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Childhood #1 -->
+          <img src="assets/images/childhood1.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Little Mochi</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Childhood #2 -->
+          <img src="assets/images/childhood2.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">A Cute Cow</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Childhood #3 -->
+          <img src="assets/images/childhood3.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Cuteness Overload</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="Childhood moments">
+        <!-- REPLACE PHOTO: Childhood moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-childhood-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">A Boy from Busan</span></div>
+        <!-- REPLACE PHOTO: Childhood moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-childhood-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Sea Air</span></div>
+        <!-- REPLACE PHOTO: Childhood moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-childhood-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Quiet Beginnings</span></div>
+        <!-- REPLACE PHOTO: Childhood moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-childhood-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">First Steps</span></div>
+      </div>
+    </article>
+
+
+    <!-- ========== ERA 2 · TRAINEE DAYS ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">II</span>
+        <h3 class="era-heading-title">Trainee Days</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">Long mirrors, late nights, and the quiet discipline of becoming.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Trainee #1 -->
+          <img src="assets/images/trainee1.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Start</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Trainee #2 -->
+          <img src="assets/images/trainee2.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Practice Room</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Trainee #3 -->
+          <img src="assets/images/trainee3.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">The Long Wait</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="Trainee moments">
+        <!-- REPLACE PHOTO: Trainee moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-trainee-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">First Steps</span></div>
+        <!-- REPLACE PHOTO: Trainee moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-trainee-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Dance Studio</span></div>
+        <!-- REPLACE PHOTO: Trainee moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-trainee-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Practice</span></div>
+        <!-- REPLACE PHOTO: Trainee moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-trainee-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Devotion</span></div>
+      </div>
+    </article>
+
+
+    <!-- ========== ERA 3 · DEBUT ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">III</span>
+        <h3 class="era-heading-title">Debut</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">2013 — seven boys, one stage, and a beginning the world would never forget.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Debut #1 -->
+          <img src="assets/images/debut1.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">2 Cool 4 Skool</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Debut #2 -->
+          <img src="assets/images/debut2.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Selca</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Debut #3 -->
+          <img src="assets/images/debut3.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">No More Dream</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="Debut moments">
+        <!-- REPLACE PHOTO: Debut moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-debut-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Debut Stage</span></div>
+        <!-- REPLACE PHOTO: Debut moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-debut-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Music Show</span></div>
+        <!-- REPLACE PHOTO: Debut moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-debut-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Backstage</span></div>
+        <!-- REPLACE PHOTO: Debut moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-debut-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">First Bow</span></div>
+      </div>
+    </article>
+
+
+    <!-- ========== ERA 4 · HYYH ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">IV</span>
+        <h3 class="era-heading-title">HYYH</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">The most beautiful moment in life — youth, longing, and the quiet ache of running through wheat fields.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: HYYH #1 -->
+          <img src="assets/images/hyyh1.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Run</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: HYYH #2 -->
+          <img src="assets/images/hyyh2.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">I Need U</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: HYYH #3 -->
+          <img src="assets/images/hyyh3.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Epilogue: Young Forever</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="HYYH moments">
+        <!-- REPLACE PHOTO: HYYH moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-hyyh-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Wheat Fields</span></div>
+        <!-- REPLACE PHOTO: HYYH moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-hyyh-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Sea, Train</span></div>
+        <!-- REPLACE PHOTO: HYYH moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-hyyh-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Longing</span></div>
+        <!-- REPLACE PHOTO: HYYH moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-hyyh-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Lie</span></div>
+      </div>
+    </article>
+
+
+    <!-- ========== ERA 5 · BLOOD SWEAT & TEARS ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">V</span>
+        <h3 class="era-heading-title">Blood Sweat &amp; Tears</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">Wings — a baroque dream, soft devotion, and the moment art became architecture.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: BST #1 -->
+          <img src="assets/images/bst1.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Wings</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: BST #2 -->
+          <img src="assets/images/bst2.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Museum</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: BST #3 -->
+          <img src="assets/images/bst3.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Lie · Stage</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="Blood Sweat &amp; Tears moments">
+        <!-- REPLACE PHOTO: BST moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-bst-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Baroque</span></div>
+        <!-- REPLACE PHOTO: BST moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-bst-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Silk</span></div>
+        <!-- REPLACE PHOTO: BST moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-bst-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Mirror Room</span></div>
+        <!-- REPLACE PHOTO: BST moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-bst-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Wings</span></div>
+      </div>
+    </article>
+
+
+    <!-- ========== ERA 6 · SERENDIPITY ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">VI</span>
+        <h3 class="era-heading-title">Serendipity</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">Love Yourself: Her — the universe folding gently into one quiet, blue-lit room.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Serendipity #1 -->
+          <img src="assets/images/serendipity1.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Serendipity</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Serendipity #2 -->
+          <img src="assets/images/serendipity2.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Performance</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Serendipity #3 -->
+          <img src="assets/images/serendipity3.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap"><em>♡</em></figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="Serendipity moments">
+        <!-- REPLACE PHOTO: Serendipity moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-serendipity-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Universe</span></div>
+        <!-- REPLACE PHOTO: Serendipity moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-serendipity-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Bubbles</span></div>
+        <!-- REPLACE PHOTO: Serendipity moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-serendipity-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Quiet Room</span></div>
+        <!-- REPLACE PHOTO: Serendipity moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-serendipity-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Soft Hands</span></div>
+      </div>
+    </article>
+
+
+    <!-- ========== ERA 7 · FACE ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">VII</span>
+        <h3 class="era-heading-title">FACE</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">A solo debut written in honesty — every line carved out of who he had quietly become.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: FACE #1 -->
+          <img src="assets/images/face1.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Like Crazy</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: FACE #2 -->
+          <img src="assets/images/face2.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Set Me Free Pt. 2</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: FACE #3 -->
+          <img src="assets/images/face3.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Alone</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="FACE moments">
+        <!-- REPLACE PHOTO: FACE moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-face-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Neon</span></div>
+        <!-- REPLACE PHOTO: FACE moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-face-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Tokyo</span></div>
+        <!-- REPLACE PHOTO: FACE moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-face-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Solo Stage</span></div>
+        <!-- REPLACE PHOTO: FACE moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-face-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Honesty</span></div>
+      </div>
+    </article>
+
+
+    <!-- ========== ERA 8 · MUSE ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">VIII</span>
+        <h3 class="era-heading-title">MUSE</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">A second chapter — softer, sunlit, the kind of album you put on at the start of summer.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: MUSE #1 -->
+          <img src="assets/images/muse1.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Smeraldo Garden</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: MUSE #2 -->
+          <img src="assets/images/muse2.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Who</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: MUSE #3 -->
+          <img src="assets/images/muse3.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Be Mine</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="MUSE moments">
+        <!-- REPLACE PHOTO: MUSE moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-muse-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Garden Light</span></div>
+        <!-- REPLACE PHOTO: MUSE moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-muse-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Soft Bloom</span></div>
+        <!-- REPLACE PHOTO: MUSE moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-muse-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Window</span></div>
+        <!-- REPLACE PHOTO: MUSE moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-muse-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Sunlit</span></div>
+      </div>
+    </article>
+
+    <!-- ========== ERA 9 · ARIRANG ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">IX</span>
+        <h3 class="era-heading-title">Arirang Era</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">A bow to the place he came from — a folk song carried gently into the present, in his own voice.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Arirang #1 -->
+          <img src="assets/images/arirang1.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Precious</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Arirang #2 -->
+          <img src="assets/images/arirang2.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Gorgeous</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <!-- REPLACE PHOTO: Arirang #3 -->
+          <img src="assets/images/arirang3.JPG" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Charming</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="Arirang moments">
+        <!-- REPLACE PHOTO: Arirang moment #1 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-arirang-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Heritage</span></div>
+        <!-- REPLACE PHOTO: Arirang moment #2 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-arirang-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Tradition</span></div>
+        <!-- REPLACE PHOTO: Arirang moment #3 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-arirang-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Voice</span></div>
+        <!-- REPLACE PHOTO: Arirang moment #4 -->
+        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-arirang-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Return</span></div>
+      </div>
+    </article>
+
+    <!-- ========== ERA 10 · BROTHERS ========== -->
+    <article class="gallery-era reveal">
+      <div class="era-heading">
+        <span class="era-heading-num">X</span>
+        <h3 class="era-heading-title">Brothers</h3>
+        <span class="era-heading-rule"></span>
+      </div>
+      <p class="era-caption">Six brothers, one stage, and a bond carried through every chapter — the people who became home.</p>
+
+      <div class="polaroid-row">
+        <figure class="polaroid">
+          <img src="assets/images/bts1.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Seven as One</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <img src="assets/images/bts2.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">Bangtan Forever</figcaption>
+        </figure>
+        <figure class="polaroid">
+          <img src="assets/images/bts3.jpg" alt="" loading="lazy" />
+          <figcaption class="polaroid-cap">The Family</figcaption>
+        </figure>
+      </div>
+
+      <div class="film-strip" aria-label="BTS members">
+        <div class="moment-frame"><img src="assets/images/rm.jpg" alt="" loading="lazy"/><span class="frame-cap">RM</span></div>
+        <div class="moment-frame"><img src="assets/images/jin.jpg" alt="" loading="lazy"/><span class="frame-cap">Jin</span></div>
+        <div class="moment-frame"><img src="assets/images/suga.jpg" alt="" loading="lazy"/><span class="frame-cap">Suga</span></div>
+        <div class="moment-frame"><img src="assets/images/jhope.jpg" alt="" loading="lazy"/><span class="frame-cap">J-Hope</span></div>
+        <div class="moment-frame"><img src="assets/images/jimin.jpg" alt="" loading="lazy"/><span class="frame-cap">Jimin</span></div>
+        <div class="moment-frame"><img src="assets/images/v.jpg" alt="" loading="lazy"/><span class="frame-cap">V</span></div>
+        <div class="moment-frame"><img src="assets/images/jk.jpg" alt="" loading="lazy"/><span class="frame-cap">Jungkook</span></div>
+      </div>
+    </article>
+
+    <!-- ADD NEW ERA: paste a copy of any <article class="gallery-era reveal">...</article>
+         block here, then change the heading, caption, and image URLs. -->
+  </section>
+
+
+  <!-- ============================================================
+       MOON-PHASE DIVIDER
+       ============================================================ -->
+  <div class="moon-divider reveal" aria-hidden="true">
+    <span class="moon-divider-line"></span>
+    <svg class="phase"><use href="#phase-1"/></svg>
+    <svg class="phase"><use href="#phase-2"/></svg>
+    <svg class="phase"><use href="#phase-3"/></svg>
+    <svg class="phase"><use href="#phase-4"/></svg>
+    <svg class="phase"><use href="#phase-5"/></svg>
+    <span class="moon-divider-line"></span>
+  </div>
+
+
+  <!-- ============================================================
+       SECTION 4 · TO JIMIN
+       ------------------------------------------------------------
+       EDIT TEXT: change the words below to write your own letter.
+       ============================================================ -->
+  <section class="section to-jimin-section" id="to-jimin">
+    <div class="section-head reveal" style="text-align:center;">
+      <span class="section-label">Chapter III</span>
+      <h2 class="section-title">To Jimin</h2>
+    </div>
+
+    <div class="to-jimin reveal">
+      <blockquote>
+        <p>
+          He is more than an idol.<br/>
+          He became a comfort during our hardest days,<br/>
+          a smile we searched for,<br/>
+          a voice we returned to,<br/>
+          and a home we never expected to find.
+        </p>
+      </blockquote>
+
+      <div class="ornament"></div>
+
+      <blockquote>
+        <p>
+          May you always find reasons to smile,<br/>
+          just as you have given us countless reasons to smile.
+        </p>
+        <p>Don&rsquo;t be too hard on yourself.</p>
+        <p>
+          You have done enough.<br/>
+          You are enough.
+        </p>
+        <p>
+          May this new chapter bring you peace,<br/>
+          comfort, happiness,<br/>
+          and all the love you deserve.
+        </p>
+      </blockquote>
+
+      <div class="ornament"></div>
+
+      <p class="closing">
+        Thank you for <em>growing</em> with us.<br/>
+        Thank you for <em>staying</em>.<br/>
+        Thank you, <em>Park Jimin</em>.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       MOON-PHASE DIVIDER
+       ============================================================ -->
+  <div class="moon-divider reveal" aria-hidden="true">
+    <span class="moon-divider-line"></span>
+    <svg class="phase"><use href="#phase-1"/></svg>
+    <svg class="phase"><use href="#phase-2"/></svg>
+    <svg class="phase"><use href="#phase-3"/></svg>
+    <svg class="phase"><use href="#phase-4"/></svg>
+    <svg class="phase"><use href="#phase-5"/></svg>
+    <span class="moon-divider-line"></span>
+  </div>
+
+
+  <!-- ============================================================
+       SECTION 5 · WISHES WALL
+       ------------------------------------------------------------
+       Visitors type a wish + name and click Send. The wish is
+       stored only on their own device (localStorage). They can
+       see all wishes they have ever written on this site.
+       ============================================================ -->
+  <section class="section" id="wishes">
+    <div class="section-head reveal" style="text-align:center;">
+      <span class="section-label">Chapter IV</span>
+      <h2 class="section-title">Write your wishes<br/>for Jimin <em>♡</em></h2>
+      <p class="section-sub" style="margin-left:auto; margin-right:auto;">
+        Leave a note. It will stay here, on this device, for as long as you&rsquo;d like to keep it.
+      </p>
+    </div>
+
+    <form class="wishes-form reveal" id="wishes-form" autocomplete="off">
+      <input type="text" id="wish-name" maxlength="40" placeholder="Your name (or leave blank for anonymous)" />
+      <textarea id="wish-text" maxlength="500" placeholder="Write your wish for Jimin..." required></textarea>
+
+      <label class="wish-image-label" for="wish-image">
+        <span class="wish-image-button">Attach a photo (optional)</span>
+        <input type="file" id="wish-image" accept="image/*" hidden />
+      </label>
+      <div class="wish-image-preview" id="wish-image-preview" hidden>
+        <img id="wish-image-preview-img" alt="Selected photo preview" />
+        <button type="button" id="wish-image-clear" aria-label="Remove selected photo">Remove</button>
+      </div>
+
+      <button type="submit">Send Wish</button>
+    </form>
+
+    <div class="wishes-grid" id="wishes-grid" aria-live="polite">
+      <p class="wishes-empty">Be the first to leave a wish.</p>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       MOON-PHASE DIVIDER
+       ============================================================ -->
+  <div class="moon-divider reveal" aria-hidden="true">
+    <span class="moon-divider-line"></span>
+    <svg class="phase"><use href="#phase-1"/></svg>
+    <svg class="phase"><use href="#phase-2"/></svg>
+    <svg class="phase"><use href="#phase-3"/></svg>
+    <svg class="phase"><use href="#phase-4"/></svg>
+    <svg class="phase"><use href="#phase-5"/></svg>
+    <span class="moon-divider-line"></span>
+  </div>
+
+
+  <!-- ============================================================
+       SECTION 6 · FINAL
+       ============================================================ -->
+  <section class="final" id="final">
+
+    <!-- The cinematic moon-phase sequence — Jimin's tattoo, fading in one by one. -->
+    <div class="moon-phase-row" data-final-seq aria-hidden="true">
+      <svg class="phase phase-1"><use href="#phase-1"/></svg>
+      <svg class="phase phase-2"><use href="#phase-2"/></svg>
+      <svg class="phase phase-3"><use href="#phase-3"/></svg>
+      <svg class="phase phase-4"><use href="#phase-4"/></svg>
+      <svg class="phase phase-5"><use href="#phase-5"/></svg>
+    </div>
+
+    <p class="final-verse final-step">
+      Every moon has its phase,<br/>
+      every dream has its time.
+    </p>
+
+    <p class="final-birthday final-step">
+      Happy Birthday,<br/>
+      Park Jimin.
+    </p>
+
+    <div class="final-sign final-step">
+      With Love,
+      <strong>ARMY</strong>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       LIGHTBOX — appears when a photo is clicked
+       ============================================================ -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close">Close ✕</button>
+    <img alt="" id="lightbox-img" />
+  </div>
+
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="js/main.js"></script>
+  <script src="js/video-modal.js"></script>
+  <script src="js/wishes.js"></script>
+
+</body>
+</html>

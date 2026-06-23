@@ -1,0 +1,1018 @@
+/* ============================================================
+   A JOURNEY THROUGH JIMIN — MAIN STYLESHEET
+   ------------------------------------------------------------
+   Sections in this file:
+     1. DESIGN TOKENS (colors, fonts, spacing)
+     2. RESET + BASE
+     3. TYPOGRAPHY HELPERS (section labels, titles, subs)
+     4. OVERLAYS (vignette — grain/dust live in animations.css)
+     5. LOADER
+     6. HERO
+     7. WATCH THE JOURNEY (poster + modal)
+     8. MEMORY GALLERY (era blocks, polaroids, film strips)
+     9. TO JIMIN
+    10. WISHES WALL
+    11. FINAL SECTION
+    12. LIGHTBOX (photo zoom)
+    13. RESPONSIVE (mobile-first breakpoints)
+   ============================================================ */
+
+
+/* ============================================================
+   1. DESIGN TOKENS
+   ------------------------------------------------------------
+   Change a value here to update the entire site at once.
+   ============================================================ */
+:root {
+  --black:    #0A0A0A;
+  --charcoal: #161616;
+  --ivory:    #F5F3EE;
+  --silver:   #C9C9C9;
+  --ink:      #1a1a1a;
+
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-serif:   'Cormorant Garamond', 'Times New Roman', serif;
+  --font-sans:    'Inter', system-ui, sans-serif;
+
+  --ease:      cubic-bezier(.22, .61, .36, 1);
+  --ease-soft: cubic-bezier(.4, 0, .2, 1);
+
+  --pad-x:     clamp(1.25rem, 4vw, 5rem);
+  --section-y: clamp(5rem, 10vw, 10rem);
+}
+
+
+/* ============================================================
+   2. RESET + BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--black);
+  color: var(--ivory);
+  font-family: var(--font-serif);
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+img    { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea { font-family: inherit; color: inherit; }
+a      { color: inherit; text-decoration: none; }
+
+/* Universal black-and-white photo treatment — any image you drop in
+   becomes part of the film aesthetic automatically. */
+.bw,
+.polaroid img,
+.film-frame img,
+.gallery-item img,
+.moment-frame img,
+.era-photo img {
+  filter: grayscale(1) contrast(1.06) brightness(.95);
+  transition: filter .8s var(--ease), transform .8s var(--ease);
+}
+
+
+/* ============================================================
+   3. TYPOGRAPHY HELPERS
+   ============================================================ */
+.section {
+  padding: var(--section-y) var(--pad-x);
+  position: relative;
+}
+
+.section-head { margin-bottom: clamp(2.5rem, 5vw, 5rem); }
+
+.section-label {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: .72rem;
+  letter-spacing: .5em;
+  text-transform: uppercase;
+  color: var(--silver);
+  opacity: .75;
+  display: inline-block;
+}
+.section-label::before {
+  content: "";
+  display: inline-block;
+  width: 36px; height: 1px;
+  background: var(--silver);
+  vertical-align: middle;
+  margin-right: 1rem;
+  opacity: .5;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4.5vw, 3.6rem);
+  line-height: 1.15;
+  letter-spacing: .01em;
+  margin-top: 1.2rem;
+}
+.section-title em { font-style: italic; font-weight: 400; color: var(--silver); }
+
+.section-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--silver);
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  margin-top: .8rem;
+  max-width: 60ch;
+}
+
+
+/* ============================================================
+   4. OVERLAYS — vignette only
+   (Grain + dust styling lives in animations.css)
+   ============================================================ */
+.vignette {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 9996;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%);
+}
+
+
+/* ============================================================
+   5. LOADER
+   ============================================================ */
+.loader {
+  position: fixed; inset: 0;
+  z-index: 10000;
+  background: var(--black);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  transition: opacity 1.4s var(--ease), visibility 1.4s var(--ease);
+}
+.loader.fade { opacity: 0; visibility: hidden; }
+
+.loader-phases {
+  display: flex;
+  gap: clamp(.9rem, 2vw, 1.6rem);
+  margin-bottom: 2.4rem;
+  filter: drop-shadow(0 0 18px rgba(245, 243, 238, .12));
+}
+.loader-phases .phase {
+  width: clamp(22px, 3vw, 30px);
+  height: clamp(22px, 3vw, 30px);
+  opacity: 0;
+  animation: loaderPhase 1s var(--ease) forwards;
+}
+.loader-phases .phase:nth-child(1) { animation-delay: 0.0s; }
+.loader-phases .phase:nth-child(2) { animation-delay: 0.25s; }
+.loader-phases .phase:nth-child(3) { animation-delay: 0.50s; }
+.loader-phases .phase:nth-child(4) { animation-delay: 0.75s; }
+.loader-phases .phase:nth-child(5) { animation-delay: 1.00s; }
+
+.loader-mark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--silver);
+  letter-spacing: .35em;
+  font-size: .85rem;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: loaderFade 2.2s var(--ease) 1.2s forwards;
+}
+.loader-line {
+  width: 0; height: 1px;
+  background: var(--silver);
+  margin-top: 1.5rem;
+  animation: loaderLine 1.8s var(--ease) 1.5s forwards;
+}
+
+
+/* ============================================================
+   5b. MOON-PHASE MOTIF — reusable base + variants
+   ------------------------------------------------------------
+   .phase is the generic moon SVG used everywhere (loader,
+   dividers, hero floats, final sequence, cursor trail).
+   ============================================================ */
+.phase {
+  display: inline-block;
+  vertical-align: middle;
+  /* default sizing — child contexts override */
+  width: 18px;
+  height: 18px;
+}
+
+/* --- Section dividers — thin row between sections --- */
+.moon-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 1.6vw, 18px);
+  padding: clamp(2.5rem, 6vw, 4.5rem) var(--pad-x);
+  opacity: .55;
+}
+.moon-divider .phase {
+  width: 12px;
+  height: 12px;
+  opacity: .75;
+}
+.moon-divider .phase:nth-child(4) { /* the center full moon */
+  width: 14px;
+  height: 14px;
+}
+.moon-divider-line {
+  flex: 1;
+  max-width: min(180px, 22vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--silver), transparent);
+  opacity: .5;
+}
+
+/* --- Hero floating phases — three small drifting moons --- */
+.hero-phase {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  animation: heroPhaseFadeIn 2s var(--ease) 3.4s forwards;
+  will-change: transform, opacity;
+}
+.hero-phase-a {
+  width: 26px; height: 26px;
+  top: 22%; left: 9%;
+  animation: heroPhaseFadeIn 2s var(--ease) 3.4s forwards,
+             heroPhaseDriftA 28s ease-in-out 5.4s infinite alternate;
+}
+.hero-phase-b {
+  width: 32px; height: 32px;
+  top: 64%; right: 12%;
+  animation: heroPhaseFadeIn 2s var(--ease) 3.8s forwards,
+             heroPhaseDriftB 34s ease-in-out 5.8s infinite alternate;
+}
+.hero-phase-c {
+  width: 20px; height: 20px;
+  bottom: 18%; left: 14%;
+  animation: heroPhaseFadeIn 2s var(--ease) 4.2s forwards,
+             heroPhaseDriftC 30s ease-in-out 6.2s infinite alternate;
+}
+
+
+/* ============================================================
+   6. HERO
+   ============================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 6rem var(--pad-x) 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-moon {
+  position: absolute;
+  top: 12%; right: 8%;
+  width: clamp(160px, 22vw, 320px);
+  height: clamp(160px, 22vw, 320px);
+  opacity: .85;
+  animation: moonDrift 18s ease-in-out infinite alternate;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: .65em;
+  font-size: .7rem;
+  text-transform: uppercase;
+  color: var(--silver);
+  margin-bottom: 2.5rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 8vw, 6rem);
+  line-height: 1;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  max-width: 14ch;
+}
+.hero-title span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: titleIn 1.6s var(--ease) forwards;
+}
+.hero-title span:nth-child(1) { animation-delay: 1.6s; }
+.hero-title span:nth-child(2) { animation-delay: 1.85s; }
+.hero-title span:nth-child(3) { animation-delay: 2.10s; }
+.hero-title span:nth-child(4) { animation-delay: 2.35s; }
+
+.hero-rule {
+  width: 80px; height: 1px;
+  background: var(--silver);
+  margin: 2.5rem auto;
+  opacity: 0;
+  animation: ruleIn 1.4s var(--ease) 2.8s forwards;
+}
+
+.hero-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--silver);
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  max-width: 48ch;
+  line-height: 1.7;
+  opacity: 0;
+  animation: ruleIn 1.6s var(--ease) 3.1s forwards;
+}
+
+.hero-date {
+  margin-top: 3.5rem;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: .55em;
+  font-size: .75rem;
+  text-transform: uppercase;
+  color: var(--ivory);
+  opacity: 0;
+  animation: ruleIn 1.6s var(--ease) 3.6s forwards;
+}
+
+.hero-scroll {
+  position: absolute; bottom: 2.5rem; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: .65rem;
+  letter-spacing: .5em;
+  text-transform: uppercase;
+  color: var(--silver);
+  opacity: 0;
+  animation: ruleIn 1.6s var(--ease) 4s forwards;
+}
+.hero-scroll::after {
+  content: "";
+  display: block;
+  width: 1px; height: 50px;
+  background: var(--silver);
+  margin: 1rem auto 0;
+  animation: scrollPulse 2.4s ease-in-out infinite;
+}
+
+
+/* ============================================================
+   7. WATCH THE JOURNEY — feature poster + in-page modal
+   ============================================================ */
+.journey {
+  background: linear-gradient(180deg, var(--black), var(--charcoal) 50%, var(--black));
+}
+
+.video-poster {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  background: var(--black);
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(201, 201, 201, .15);
+  transition: border-color .6s var(--ease), transform .6s var(--ease);
+}
+.video-poster:hover {
+  border-color: rgba(245, 243, 238, .4);
+  transform: translateY(-4px);
+}
+
+/* The poster background — a soft cinematic gradient with a faint moon. */
+.video-poster-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(245,243,238,.12), transparent 55%),
+    radial-gradient(ellipse at 30% 80%, rgba(201,201,201,.06), transparent 60%),
+    linear-gradient(180deg, #1a1a1a, #0a0a0a);
+  filter: grayscale(1) contrast(1.05);
+}
+
+.video-poster-grain {
+  position: absolute; inset: 0;
+  opacity: .12;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.video-poster-label {
+  position: absolute;
+  top: 1.6rem; left: 1.8rem;
+  font-family: var(--font-sans);
+  font-size: .65rem;
+  letter-spacing: .5em;
+  text-transform: uppercase;
+  color: var(--silver);
+  opacity: .85;
+}
+
+.video-poster-title {
+  position: absolute;
+  bottom: 1.8rem; left: 1.8rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+  color: var(--ivory);
+  max-width: 60%;
+  line-height: 1.4;
+}
+
+/* The center play button — circular ivory ring, ▶ glyph. */
+.video-play {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(76px, 10vw, 116px);
+  height: clamp(76px, 10vw, 116px);
+  border-radius: 50%;
+  border: 1px solid var(--ivory);
+  background: rgba(10, 10, 10, .35);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ivory);
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  padding-left: .3em;  /* nudge ▶ glyph optically center */
+  transition: background .5s var(--ease), transform .5s var(--ease);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.video-play::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 243, 238, .25);
+  animation: playPulse 2.4s ease-in-out infinite;
+}
+.video-poster:hover .video-play {
+  background: var(--ivory);
+  color: var(--black);
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
+/* ----- The modal that plays the video INSIDE the page ----- */
+.video-modal {
+  position: fixed; inset: 0;
+  z-index: 9999;
+  background: rgba(10, 10, 10, .95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(1rem, 3vw, 3rem);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .55s var(--ease), visibility .55s var(--ease);
+}
+.video-modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.video-modal-frame {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  aspect-ratio: 16 / 9;
+  background: var(--black);
+  border: 1px solid rgba(245, 243, 238, .2);
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, .9);
+  transform: scale(.96);
+  transition: transform .7s var(--ease);
+}
+.video-modal.open .video-modal-frame { transform: scale(1); }
+
+.video-modal-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-modal-close {
+  position: absolute;
+  top: -3rem; right: 0;
+  font-family: var(--font-sans);
+  font-size: .68rem;
+  letter-spacing: .5em;
+  text-transform: uppercase;
+  color: var(--silver);
+  padding: .6rem 1rem;
+  transition: color .4s var(--ease);
+}
+.video-modal-close:hover { color: var(--ivory); }
+
+
+/* ============================================================
+   8. MEMORY GALLERY — era blocks with mixed polaroids + film strip
+   ============================================================ */
+.gallery-era {
+  margin-bottom: clamp(4rem, 7vw, 7rem);
+}
+.gallery-era:last-child { margin-bottom: 0; }
+
+.era-heading {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+.era-heading-num {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: .68rem;
+  letter-spacing: .5em;
+  text-transform: uppercase;
+  color: var(--silver);
+}
+.era-heading-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+  letter-spacing: .02em;
+  color: var(--ivory);
+}
+.era-heading-rule {
+  flex: 1;
+  height: 1px;
+  background: rgba(201, 201, 201, .25);
+}
+
+.era-caption {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(.95rem, 1.3vw, 1.1rem);
+  color: var(--silver);
+  max-width: 56ch;
+  margin-bottom: 1.8rem;
+  line-height: 1.7;
+}
+
+/* The polaroid row — 3 photos, each with a soft rotation. */
+.polaroid-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+  margin-bottom: 1.6rem;
+}
+
+.polaroid {
+  background: #fafaf6;
+  padding: .9rem .9rem 2.6rem;
+  box-shadow: 0 12px 32px -12px rgba(0,0,0,.7), 0 2px 4px rgba(0,0,0,.4);
+  transition: transform .8s var(--ease), box-shadow .8s var(--ease);
+  cursor: zoom-in;
+  transform-origin: center;
+}
+.polaroid:nth-child(3n+1) { transform: rotate(-2.2deg); }
+.polaroid:nth-child(3n+2) { transform: rotate(1.4deg); }
+.polaroid:nth-child(3n+3) { transform: rotate(-.6deg); }
+.polaroid:hover {
+  transform: rotate(0) translateY(-6px) scale(1.02);
+  box-shadow: 0 24px 48px -14px rgba(0,0,0,.75);
+}
+.polaroid img { aspect-ratio: 3/4; object-fit: cover; width: 100%; }
+.polaroid-cap {
+  margin-top: .7rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: #2a2a2a;
+  font-size: .9rem;
+  text-align: center;
+}
+
+/* The film-strip row — horizontally scrolling cinematic frames. */
+.film-strip {
+  position: relative;
+  display: flex;
+  gap: .6rem;
+  overflow-x: auto;
+  padding: 22px .5rem;
+  background: var(--charcoal);
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 201, 201, .2) transparent;
+}
+.film-strip::-webkit-scrollbar { height: 6px; }
+.film-strip::-webkit-scrollbar-thumb { background: rgba(201, 201, 201, .2); }
+
+/* The perforated edges of the film strip (top + bottom). */
+.film-strip::before,
+.film-strip::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  height: 14px;
+  background-image: radial-gradient(circle, var(--black) 0 5px, transparent 5.5px);
+  background-size: 28px 14px;
+  background-repeat: repeat-x;
+  pointer-events: none;
+}
+.film-strip::before { top: 0; }
+.film-strip::after  { bottom: 0; }
+
+.moment-frame {
+  flex: 0 0 clamp(180px, 22vw, 280px);
+  aspect-ratio: 4/3;
+  background: var(--black);
+  overflow: hidden;
+  scroll-snap-align: start;
+  position: relative;
+  cursor: zoom-in;
+}
+.moment-frame img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease);
+}
+.moment-frame:hover img { transform: scale(1.05); }
+.moment-frame .frame-cap {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: .6rem .8rem;
+  font-family: var(--font-sans);
+  font-size: .62rem;
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  background: linear-gradient(to top, rgba(0,0,0,.75), transparent);
+}
+
+
+/* ============================================================
+   9. TO JIMIN
+   ============================================================ */
+.to-jimin-section {
+  background: linear-gradient(180deg, var(--black), #0d0d0d);
+}
+.to-jimin {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto;
+}
+.to-jimin blockquote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.3rem, 2.4vw, 1.5rem);
+  line-height: 1.65;
+  color: var(--ivory);
+}
+.to-jimin blockquote p { margin-bottom: 1.4rem; }
+.to-jimin .ornament {
+  width: 60px; height: 1px;
+  background: var(--silver);
+  margin: 2.5rem auto;
+  opacity: .55;
+}
+.to-jimin .closing {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  letter-spacing: .03em;
+  color: var(--ivory);
+  line-height: 1.6;
+}
+.to-jimin .closing em { font-style: italic; color: var(--silver); }
+
+
+/* ============================================================
+   10. WISHES WALL
+   ============================================================ */
+.wishes-form {
+  max-width: 640px;
+  margin: 0 auto 4rem;
+  display: grid;
+  gap: 1rem;
+}
+.wishes-form input,
+.wishes-form textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(201, 201, 201, .3);
+  padding: 1rem .2rem;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.05rem;
+  color: var(--ivory);
+  transition: border-color .4s var(--ease);
+  outline: none;
+  resize: vertical;
+}
+.wishes-form input:focus,
+.wishes-form textarea:focus { border-color: var(--ivory); }
+.wishes-form textarea { min-height: 110px; font-style: italic; }
+.wishes-form ::placeholder { color: rgba(201, 201, 201, .5); font-style: italic; }
+
+.wishes-form button {
+  justify-self: center;
+  margin-top: 1rem;
+  padding: .9rem 2.4rem;
+  font-family: var(--font-sans);
+  font-size: .7rem;
+  letter-spacing: .55em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  border: 1px solid var(--ivory);
+  transition: background .4s var(--ease), color .4s var(--ease);
+}
+.wishes-form button:hover { background: var(--ivory); color: var(--black); }
+
+.wishes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(1.2rem, 2vw, 2rem);
+}
+.wish-card {
+  background: #f4f1ea;
+  color: #2a2a2a;
+  padding: 1.6rem 1.4rem 1.2rem;
+  box-shadow: 0 12px 32px -14px rgba(0,0,0,.65);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.55;
+  position: relative;
+  transition: transform .5s var(--ease);
+}
+.wish-card:nth-child(4n+1) { transform: rotate(-1.4deg); }
+.wish-card:nth-child(4n+2) { transform: rotate(1.6deg); }
+.wish-card:nth-child(4n+3) { transform: rotate(-.6deg); }
+.wish-card:nth-child(4n+4) { transform: rotate(.8deg); }
+.wish-card:hover { transform: rotate(0) translateY(-3px); }
+
+.wish-card .wish-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+.wish-card .wish-meta {
+  margin-top: 1rem;
+  padding-top: .8rem;
+  border-top: 1px solid rgba(0, 0, 0, .12);
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: .65rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: #6a6a6a;
+  display: flex; justify-content: space-between; gap: 1rem;
+}
+.wishes-empty {
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--silver);
+  grid-column: 1/-1;
+  opacity: .7;
+  padding: 2rem 0;
+}
+
+.wish-image-label {
+  justify-self: center;
+  cursor: pointer;
+}
+.wish-image-button {
+  display: inline-block;
+  padding: .7rem 1.8rem;
+  font-family: var(--font-sans);
+  font-size: .65rem;
+  letter-spacing: .45em;
+  text-transform: uppercase;
+  color: var(--silver);
+  border: 1px dashed rgba(201, 201, 201, .4);
+  transition: color .4s var(--ease), border-color .4s var(--ease);
+}
+.wish-image-label:hover .wish-image-button {
+  color: var(--ivory);
+  border-color: var(--ivory);
+}
+
+.wish-image-preview {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.wish-image-preview[hidden] { display: none; }
+.wish-image-preview img {
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: cover;
+  box-shadow: 0 8px 24px -12px rgba(0,0,0,.6);
+}
+.wish-image-preview button {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: .6rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--silver);
+  cursor: pointer;
+  transition: color .3s var(--ease);
+}
+.wish-image-preview button:hover,
+.wish-image-preview button:focus {
+  background: none;
+  color: var(--ivory);
+}
+
+.wish-card .wish-image {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  margin: -.4rem 0 1rem;
+  box-shadow: 0 6px 18px -12px rgba(0,0,0,.5);
+}
+
+
+/* ============================================================
+   11. FINAL SECTION — cinematic moon-phase ending sequence
+   ============================================================ */
+.final {
+  text-align: center;
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  padding: 6rem var(--pad-x);
+  position: relative;
+  background: radial-gradient(ellipse at 50% 30%, rgba(245,243,238,.05), transparent 60%);
+}
+
+/* The phase row — 5 phases that fade in one by one when in view. */
+.moon-phase-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.2rem, 3vw, 2.4rem);
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+.moon-phase-row .phase {
+  width: clamp(48px, 7vw, 84px);
+  height: clamp(48px, 7vw, 84px);
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+/* The full moon (centerpiece) sits slightly larger. */
+.moon-phase-row .phase-3 {
+  width: clamp(56px, 8.4vw, 100px);
+  height: clamp(56px, 8.4vw, 100px);
+}
+/* When the observer adds .playing, phases stagger in. */
+.moon-phase-row.playing .phase {
+  animation: phaseFade 1.2s var(--ease) forwards;
+}
+.moon-phase-row.playing .phase-1 { animation-delay: 0.00s; }
+.moon-phase-row.playing .phase-2 { animation-delay: 0.95s; }
+.moon-phase-row.playing .phase-3 { animation-delay: 1.90s; }
+.moon-phase-row.playing .phase-4 { animation-delay: 2.85s; }
+.moon-phase-row.playing .phase-5 { animation-delay: 3.80s; }
+
+/* After the full moon appears, give it a continuous soft glow. */
+.moon-phase-row.playing .phase-3 {
+  animation:
+    phaseFade 1.2s var(--ease) 1.90s forwards,
+    moonGlow 8s ease-in-out 3.5s infinite alternate;
+}
+
+/* The verse + birthday + sign-off cascade after the phases finish. */
+.final-step {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+}
+.final-step.in {
+  opacity: 1;
+  transform: none;
+}
+
+.final-verse {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1.6;
+  color: var(--ivory);
+  max-width: 28ch;
+  margin: 0 auto;
+}
+.final-birthday {
+  margin-top: 3rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  letter-spacing: .04em;
+  color: var(--ivory);
+  line-height: 1.4;
+}
+.final-birthday em { font-style: italic; color: var(--silver); }
+
+.final-sign {
+  margin-top: 3rem;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: .55em;
+  font-size: .8rem;
+  text-transform: uppercase;
+  color: var(--silver);
+}
+.final-sign strong {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.4rem;
+  letter-spacing: .2em;
+  color: var(--ivory);
+  display: block;
+  margin-top: .8rem;
+}
+
+/* The cursor trail — tiny moon phases that fade as they follow the cursor. */
+.cursor-phase {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9990;
+  width: 12px; height: 12px;
+  opacity: .55;
+  filter: drop-shadow(0 0 4px rgba(245, 243, 238, .25));
+  animation: cursorPhaseFade 1.2s var(--ease) forwards;
+  will-change: transform, opacity;
+}
+
+
+/* ============================================================
+   12. LIGHTBOX — click any polaroid or film frame to zoom
+   ============================================================ */
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(5, 5, 5, .94);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  opacity: 0; visibility: hidden;
+  transition: opacity .5s var(--ease), visibility .5s var(--ease);
+  padding: 3rem;
+  cursor: zoom-out;
+}
+.lightbox.open { opacity: 1; visibility: visible; }
+.lightbox img {
+  max-width: 90%;
+  max-height: 86vh;
+  filter: grayscale(1) contrast(1.06);
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, .9);
+}
+.lightbox-close {
+  position: absolute; top: 1.5rem; right: 2rem;
+  font-family: var(--font-sans);
+  font-size: .7rem;
+  letter-spacing: .4em;
+  color: var(--silver);
+  text-transform: uppercase;
+}
+
+
+/* ============================================================
+   13. RESPONSIVE — mobile-first breakpoints
+   ============================================================ */
+@media (max-width: 820px) {
+  .hero-moon { top: 6%; right: 6%; width: 130px; height: 130px; }
+  .hero-phase-a { width: 20px; height: 20px; }
+  .hero-phase-b { width: 24px; height: 24px; }
+  .hero-phase-c { width: 16px; height: 16px; }
+  .polaroid-row { grid-template-columns: repeat(2, 1fr); }
+  .era-heading { flex-wrap: wrap; }
+  .video-modal-close { top: -2.5rem; }
+  .moon-divider-line { max-width: 80px; }
+  .moon-phase-row { gap: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .polaroid-row { grid-template-columns: 1fr; }
+  .wishes-grid  { grid-template-columns: 1fr; }
+  .video-poster-label,
+  .video-poster-title { left: 1.2rem; }
+  .video-poster-label { top: 1.2rem; }
+  .video-poster-title { bottom: 1.4rem; max-width: 85%; }
+  .moon-phase-row { gap: .8rem; }
+  .moon-divider { padding: 2.5rem var(--pad-x); }
+  .moon-divider-line { max-width: 40px; }
+}

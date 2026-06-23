@@ -1,0 +1,176 @@
+/* ============================================================
+   A JOURNEY THROUGH JIMIN — MOTION / ANIMATIONS
+   ------------------------------------------------------------
+   This file holds every keyframe, the film-grain + dust canvas
+   styling, and the reduced-motion safety overrides. You don't
+   normally need to edit this file — it's the "feel" layer.
+   ============================================================ */
+
+
+/* ============================================================
+   FILM GRAIN OVERLAY
+   ------------------------------------------------------------
+   Sits above the page, blends in. Shifts every 1.4s to fake
+   16mm film noise.
+   ============================================================ */
+.grain {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: .09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grainShift 1.4s steps(6) infinite;
+}
+
+@keyframes grainShift {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-3%, 2%); }
+  40%  { transform: translate(2%, -3%); }
+  60%  { transform: translate(-2%, -2%); }
+  80%  { transform: translate(3%, 1%); }
+  100% { transform: translate(0, 0); }
+}
+
+
+/* ============================================================
+   DUST CANVAS — floating particles (drawn by js/main.js)
+   ============================================================ */
+#dust {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  opacity: .55;
+}
+
+
+/* ============================================================
+   REVEAL ON SCROLL — sections fade up as they enter view
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+  will-change: opacity, transform;
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+
+/* ============================================================
+   KEYFRAMES — referenced by style.css
+   ============================================================ */
+
+/* Loader text fades to ~90% opacity. */
+@keyframes loaderFade {
+  0%   { opacity: 0; }
+  30%  { opacity: .9; }
+  100% { opacity: .9; }
+}
+
+/* Loader rule draws itself out from 0 to 220px. */
+@keyframes loaderLine {
+  to { width: 220px; }
+}
+
+/* Hero title letters rise from below. */
+@keyframes titleIn {
+  to { opacity: 1; transform: none; }
+}
+
+/* Generic fade-in used for the hero subtitle / date / scroll cue. */
+@keyframes ruleIn {
+  to { opacity: .7; }
+}
+
+/* The scroll-cue line beneath "Begin the journey". */
+@keyframes scrollPulse {
+  0%, 100% { transform: scaleY(1); opacity: .4; transform-origin: top; }
+  50%      { transform: scaleY(1); opacity: 1; }
+}
+
+/* The hero moon drifts and slowly rotates. */
+@keyframes moonDrift {
+  from { transform: translateY(0) rotate(0deg); }
+  to   { transform: translateY(-22px) rotate(8deg); }
+}
+
+/* The final moon breathes a soft glow. */
+@keyframes moonGlow {
+  from { filter: drop-shadow(0 0 30px rgba(245, 243, 238, .1)); }
+  to   { filter: drop-shadow(0 0 60px rgba(245, 243, 238, .25)); }
+}
+
+/* The play-button ring pulses outward, as if breathing. */
+@keyframes playPulse {
+  0%   { transform: scale(1);    opacity: .8; }
+  70%  { transform: scale(1.25); opacity: 0;  }
+  100% { transform: scale(1.25); opacity: 0;  }
+}
+
+
+/* ============================================================
+   MOON-PHASE MOTIF KEYFRAMES
+   ============================================================ */
+
+/* Loader phases: simple fade-in to full opacity. */
+@keyframes loaderPhase {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: .95; transform: none; }
+}
+
+/* Final phase row: each phase fades in softly with a settling glow.
+   Note: no transform here — parallax owns transform on these elements. */
+@keyframes phaseFade {
+  0%   { opacity: 0; filter: drop-shadow(0 0 0 rgba(245,243,238,0)); }
+  60%  { opacity: 1; filter: drop-shadow(0 0 18px rgba(245,243,238,.18)); }
+  100% { opacity: 1; filter: drop-shadow(0 0 12px rgba(245,243,238,.12)); }
+}
+
+/* Hero floating phases: fade in once on load, then drift forever. */
+@keyframes heroPhaseFadeIn {
+  to { opacity: .35; }
+}
+@keyframes heroPhaseDriftA {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to   { transform: translate(8px, -14px) rotate(6deg); }
+}
+@keyframes heroPhaseDriftB {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to   { transform: translate(-12px, -18px) rotate(-5deg); }
+}
+@keyframes heroPhaseDriftC {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to   { transform: translate(10px, -10px) rotate(4deg); }
+}
+
+/* Cursor trail: each tiny phase fades up and out as it lifts. */
+@keyframes cursorPhaseFade {
+  0%   { opacity: .55; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0;   transform: translate(-50%, calc(-50% - 10px)) scale(.6); }
+}
+
+
+/* ============================================================
+   REDUCED MOTION — respect the system setting
+   ------------------------------------------------------------
+   Anyone with "Reduce Motion" turned on sees the same content
+   without animations, dust, or grain shift.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .grain  { animation: none; }
+  #dust   { display: none; }
+  /* In reduced motion the final phase row is shown immediately, no stagger. */
+  .moon-phase-row .phase { opacity: 1 !important; transform: none !important; }
+  .final-step { opacity: 1 !important; transform: none !important; }
+  .hero-phase { opacity: .3 !important; }
+}
