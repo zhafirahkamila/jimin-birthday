@@ -154,6 +154,23 @@
 
 
 /* ============================================================
+   MOMENTS THROUGH TIME — timeline + era modal motion
+   ============================================================ */
+
+/* Cross-fade used when modal images swap (open + prev/next nav). */
+@keyframes momentFade {
+  0%   { opacity: 0; transform: scale(1.015); filter: grayscale(1) contrast(1.06) brightness(.95) blur(4px); }
+  100% { opacity: 1; transform: scale(1);     filter: grayscale(1) contrast(1.06) brightness(.95) blur(0);  }
+}
+
+/* The little gold dot on each timeline card breathes softly. */
+@keyframes timelinePulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--black), 0 0 0   rgba(201,169,97,0);   }
+  50%      { box-shadow: 0 0 0 4px var(--black), 0 0 14px rgba(201,169,97,.55); }
+}
+
+
+/* ============================================================
    REDUCED MOTION — respect the system setting
    ------------------------------------------------------------
    Anyone with "Reduce Motion" turned on sees the same content

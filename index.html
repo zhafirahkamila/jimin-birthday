@@ -27,8 +27,9 @@
          index.html            — this file (the content)
          css/style.css         — visual design + layout
          css/animations.css    — film grain, dust, transitions
-         js/main.js            — loader, dust, scroll reveal, lightbox
+         js/main.js            — loader, dust, scroll reveal, ending
          js/video-modal.js     — "Watch The Journey" video player
+         js/moments.js         — "Moments Through Time" timeline + modal
          js/wishes.js          — guestbook (localStorage)
          assets/images/        — drop your own photos here (optional)
        ============================================================ -->
@@ -283,427 +284,209 @@
 
 
   <!-- ============================================================
-       SECTION 3 · JIMIN MEMORY GALLERY
+       SECTION 3 · MOMENTS THROUGH TIME
        ------------------------------------------------------------
-       Ten era blocks in chronological order. Each block has:
-         - a heading (era number + era name)
-         - an italic caption
-         - three polaroid photos
-         - a horizontally scrolling film strip of moments
+       A horizontal museum-style timeline. Each era is a button
+       you can click; the era opens in the fullscreen modal below.
 
-       ADD NEW ERA: to add an 11th era, copy ANY entire
-       <article class="gallery-era reveal"> block below, paste
-       it just before </section>, and change the heading, caption,
-       and image URLs.
+       EDIT TEXT / IMAGES: each era's description, period, and
+       supporting images are defined inside js/moments.js (the
+       ERAS array). Change the cover image on a card by editing
+       the <img src="..."> inside that card.
+
+       ADD NEW ERA: copy any <button class="timeline-card"> block
+       and add a matching entry to the ERAS array in moments.js.
        ============================================================ -->
-  <section class="section" id="gallery">
+  <section class="section moments-section" id="moments">
     <div class="section-head reveal" style="text-align:center;">
       <span class="section-label">Chapter II</span>
-      <h2 class="section-title">Memory <em>Gallery</em></h2>
+      <h2 class="section-title">Moments Through <em>Time</em></h2>
       <p class="section-sub" style="margin-left:auto; margin-right:auto;">
-        Ten chapters. Ten quiet rooms in the museum of a life beautifully lived.
+        Ten chapters. One quiet walk through a life beautifully lived.
       </p>
     </div>
 
+    <div class="timeline reveal" aria-label="Eras of Jimin's journey">
+      <div class="timeline-rail" aria-hidden="true"></div>
+      <div class="timeline-track" role="list">
 
-    <!-- ========== ERA 1 · CHILDHOOD ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">I</span>
-        <!-- EDIT TEXT: era title -->
-        <h3 class="era-heading-title">Childhood</h3>
-        <span class="era-heading-rule"></span>
+        <!-- ERA I · CHILDHOOD -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="childhood" aria-label="Open era: Childhood">
+          <span class="timeline-card-num">I</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/childhood1.JPG" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">1995 – 2012</span>
+            <span class="timeline-card-title">Childhood</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA II · TRAINEE DAYS -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="trainee" aria-label="Open era: Trainee Days">
+          <span class="timeline-card-num">II</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/trainee1.jpg" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2012 – 2013</span>
+            <span class="timeline-card-title">Trainee Days</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA III · DEBUT -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="debut" aria-label="Open era: Debut">
+          <span class="timeline-card-num">III</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/debut1.JPG" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2013 – 2014</span>
+            <span class="timeline-card-title">Debut</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA IV · HYYH -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="hyyh" aria-label="Open era: HYYH">
+          <span class="timeline-card-num">IV</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/hyyh1.jpg" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2015 – 2016</span>
+            <span class="timeline-card-title">HYYH</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA V · BLOOD SWEAT & TEARS -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="bst" aria-label="Open era: Blood Sweat and Tears">
+          <span class="timeline-card-num">V</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/bst1.jpg" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2016 – 2017</span>
+            <span class="timeline-card-title">Blood Sweat &amp; Tears</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA VI · SERENDIPITY -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="serendipity" aria-label="Open era: Serendipity">
+          <span class="timeline-card-num">VI</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/serendipity1.jpg" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2017 – 2018</span>
+            <span class="timeline-card-title">Serendipity</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA VII · FACE -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="face" aria-label="Open era: FACE">
+          <span class="timeline-card-num">VII</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/face1.jpg" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2023</span>
+            <span class="timeline-card-title">FACE</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA VIII · MUSE -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="muse" aria-label="Open era: MUSE">
+          <span class="timeline-card-num">VIII</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/muse1.jpg" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2024</span>
+            <span class="timeline-card-title">MUSE</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA IX · ARIRANG ERA -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="arirang" aria-label="Open era: ARIRANG">
+          <span class="timeline-card-num">IX</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/arirang1.JPG" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2024 – 2025</span>
+            <span class="timeline-card-title">ARIRANG Era</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
+        <!-- ERA X · BROTHERS -->
+        <button class="timeline-card" type="button" role="listitem"
+                data-era="brothers" aria-label="Open era: Brothers">
+          <span class="timeline-card-num">X</span>
+          <span class="timeline-card-frame">
+            <img class="timeline-card-img" src="assets/images/bts1.jpg" alt="" loading="lazy" />
+          </span>
+          <span class="timeline-card-meta">
+            <span class="timeline-card-period">2013 – present</span>
+            <span class="timeline-card-title">Brothers</span>
+          </span>
+          <span class="timeline-card-dot" aria-hidden="true"></span>
+        </button>
+
       </div>
-      <!-- EDIT TEXT: era caption -->
-      <p class="era-caption">Busan, sea air, and a boy whose smile arrived long before the world was watching.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Childhood #1 -->
-          <img src="assets/images/childhood1.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Little Mochi</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Childhood #2 -->
-          <img src="assets/images/childhood2.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">A Cute Cow</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Childhood #3 -->
-          <img src="assets/images/childhood3.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Cuteness Overload</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="Childhood moments">
-        <!-- REPLACE PHOTO: Childhood moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-childhood-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">A Boy from Busan</span></div>
-        <!-- REPLACE PHOTO: Childhood moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-childhood-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Sea Air</span></div>
-        <!-- REPLACE PHOTO: Childhood moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-childhood-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Quiet Beginnings</span></div>
-        <!-- REPLACE PHOTO: Childhood moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-childhood-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">First Steps</span></div>
-      </div>
-    </article>
-
-
-    <!-- ========== ERA 2 · TRAINEE DAYS ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">II</span>
-        <h3 class="era-heading-title">Trainee Days</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">Long mirrors, late nights, and the quiet discipline of becoming.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Trainee #1 -->
-          <img src="assets/images/trainee1.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Start</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Trainee #2 -->
-          <img src="assets/images/trainee2.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Practice Room</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Trainee #3 -->
-          <img src="assets/images/trainee3.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">The Long Wait</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="Trainee moments">
-        <!-- REPLACE PHOTO: Trainee moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-trainee-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">First Steps</span></div>
-        <!-- REPLACE PHOTO: Trainee moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-trainee-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Dance Studio</span></div>
-        <!-- REPLACE PHOTO: Trainee moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-trainee-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Practice</span></div>
-        <!-- REPLACE PHOTO: Trainee moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-trainee-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Devotion</span></div>
-      </div>
-    </article>
-
-
-    <!-- ========== ERA 3 · DEBUT ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">III</span>
-        <h3 class="era-heading-title">Debut</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">2013 — seven boys, one stage, and a beginning the world would never forget.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Debut #1 -->
-          <img src="assets/images/debut1.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">2 Cool 4 Skool</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Debut #2 -->
-          <img src="assets/images/debut2.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Selca</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Debut #3 -->
-          <img src="assets/images/debut3.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">No More Dream</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="Debut moments">
-        <!-- REPLACE PHOTO: Debut moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-debut-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Debut Stage</span></div>
-        <!-- REPLACE PHOTO: Debut moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-debut-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Music Show</span></div>
-        <!-- REPLACE PHOTO: Debut moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-debut-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Backstage</span></div>
-        <!-- REPLACE PHOTO: Debut moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-debut-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">First Bow</span></div>
-      </div>
-    </article>
-
-
-    <!-- ========== ERA 4 · HYYH ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">IV</span>
-        <h3 class="era-heading-title">HYYH</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">The most beautiful moment in life — youth, longing, and the quiet ache of running through wheat fields.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: HYYH #1 -->
-          <img src="assets/images/hyyh1.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Run</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: HYYH #2 -->
-          <img src="assets/images/hyyh2.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">I Need U</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: HYYH #3 -->
-          <img src="assets/images/hyyh3.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Epilogue: Young Forever</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="HYYH moments">
-        <!-- REPLACE PHOTO: HYYH moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-hyyh-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Wheat Fields</span></div>
-        <!-- REPLACE PHOTO: HYYH moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-hyyh-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Sea, Train</span></div>
-        <!-- REPLACE PHOTO: HYYH moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-hyyh-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Longing</span></div>
-        <!-- REPLACE PHOTO: HYYH moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-hyyh-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Lie</span></div>
-      </div>
-    </article>
-
-
-    <!-- ========== ERA 5 · BLOOD SWEAT & TEARS ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">V</span>
-        <h3 class="era-heading-title">Blood Sweat &amp; Tears</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">Wings — a baroque dream, soft devotion, and the moment art became architecture.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: BST #1 -->
-          <img src="assets/images/bst1.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Wings</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: BST #2 -->
-          <img src="assets/images/bst2.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Museum</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: BST #3 -->
-          <img src="assets/images/bst3.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Lie · Stage</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="Blood Sweat &amp; Tears moments">
-        <!-- REPLACE PHOTO: BST moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-bst-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Baroque</span></div>
-        <!-- REPLACE PHOTO: BST moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-bst-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Silk</span></div>
-        <!-- REPLACE PHOTO: BST moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-bst-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Mirror Room</span></div>
-        <!-- REPLACE PHOTO: BST moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-bst-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Wings</span></div>
-      </div>
-    </article>
-
-
-    <!-- ========== ERA 6 · SERENDIPITY ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">VI</span>
-        <h3 class="era-heading-title">Serendipity</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">Love Yourself: Her — the universe folding gently into one quiet, blue-lit room.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Serendipity #1 -->
-          <img src="assets/images/serendipity1.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Serendipity</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Serendipity #2 -->
-          <img src="assets/images/serendipity2.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Performance</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Serendipity #3 -->
-          <img src="assets/images/serendipity3.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap"><em>♡</em></figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="Serendipity moments">
-        <!-- REPLACE PHOTO: Serendipity moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-serendipity-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Universe</span></div>
-        <!-- REPLACE PHOTO: Serendipity moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-serendipity-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Bubbles</span></div>
-        <!-- REPLACE PHOTO: Serendipity moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-serendipity-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Quiet Room</span></div>
-        <!-- REPLACE PHOTO: Serendipity moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-serendipity-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Soft Hands</span></div>
-      </div>
-    </article>
-
-
-    <!-- ========== ERA 7 · FACE ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">VII</span>
-        <h3 class="era-heading-title">FACE</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">A solo debut written in honesty — every line carved out of who he had quietly become.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: FACE #1 -->
-          <img src="assets/images/face1.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Like Crazy</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: FACE #2 -->
-          <img src="assets/images/face2.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Set Me Free Pt. 2</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: FACE #3 -->
-          <img src="assets/images/face3.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Alone</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="FACE moments">
-        <!-- REPLACE PHOTO: FACE moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-face-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Neon</span></div>
-        <!-- REPLACE PHOTO: FACE moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-face-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Tokyo</span></div>
-        <!-- REPLACE PHOTO: FACE moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-face-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Solo Stage</span></div>
-        <!-- REPLACE PHOTO: FACE moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-face-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Honesty</span></div>
-      </div>
-    </article>
-
-
-    <!-- ========== ERA 8 · MUSE ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">VIII</span>
-        <h3 class="era-heading-title">MUSE</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">A second chapter — softer, sunlit, the kind of album you put on at the start of summer.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: MUSE #1 -->
-          <img src="assets/images/muse1.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Smeraldo Garden</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: MUSE #2 -->
-          <img src="assets/images/muse2.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Who</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: MUSE #3 -->
-          <img src="assets/images/muse3.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Be Mine</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="MUSE moments">
-        <!-- REPLACE PHOTO: MUSE moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-muse-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Garden Light</span></div>
-        <!-- REPLACE PHOTO: MUSE moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-muse-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Soft Bloom</span></div>
-        <!-- REPLACE PHOTO: MUSE moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-muse-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Window</span></div>
-        <!-- REPLACE PHOTO: MUSE moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-muse-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Sunlit</span></div>
-      </div>
-    </article>
-
-    <!-- ========== ERA 9 · ARIRANG ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">IX</span>
-        <h3 class="era-heading-title">Arirang Era</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">A bow to the place he came from — a folk song carried gently into the present, in his own voice.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Arirang #1 -->
-          <img src="assets/images/arirang1.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Precious</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Arirang #2 -->
-          <img src="assets/images/arirang2.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Gorgeous</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <!-- REPLACE PHOTO: Arirang #3 -->
-          <img src="assets/images/arirang3.JPG" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Charming</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="Arirang moments">
-        <!-- REPLACE PHOTO: Arirang moment #1 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-arirang-m1/600/450" alt="" loading="lazy"/><span class="frame-cap">Heritage</span></div>
-        <!-- REPLACE PHOTO: Arirang moment #2 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-arirang-m2/600/450" alt="" loading="lazy"/><span class="frame-cap">Tradition</span></div>
-        <!-- REPLACE PHOTO: Arirang moment #3 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-arirang-m3/600/450" alt="" loading="lazy"/><span class="frame-cap">Voice</span></div>
-        <!-- REPLACE PHOTO: Arirang moment #4 -->
-        <div class="moment-frame"><img src="https://picsum.photos/seed/jimin-arirang-m4/600/450" alt="" loading="lazy"/><span class="frame-cap">Return</span></div>
-      </div>
-    </article>
-
-    <!-- ========== ERA 10 · BROTHERS ========== -->
-    <article class="gallery-era reveal">
-      <div class="era-heading">
-        <span class="era-heading-num">X</span>
-        <h3 class="era-heading-title">Brothers</h3>
-        <span class="era-heading-rule"></span>
-      </div>
-      <p class="era-caption">Six brothers, one stage, and a bond carried through every chapter — the people who became home.</p>
-
-      <div class="polaroid-row">
-        <figure class="polaroid">
-          <img src="assets/images/bts1.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Seven as One</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <img src="assets/images/bts2.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">Bangtan Forever</figcaption>
-        </figure>
-        <figure class="polaroid">
-          <img src="assets/images/bts3.jpg" alt="" loading="lazy" />
-          <figcaption class="polaroid-cap">The Family</figcaption>
-        </figure>
-      </div>
-
-      <div class="film-strip" aria-label="BTS members">
-        <div class="moment-frame"><img src="assets/images/rm.jpg" alt="" loading="lazy"/><span class="frame-cap">RM</span></div>
-        <div class="moment-frame"><img src="assets/images/jin.jpg" alt="" loading="lazy"/><span class="frame-cap">Jin</span></div>
-        <div class="moment-frame"><img src="assets/images/suga.jpg" alt="" loading="lazy"/><span class="frame-cap">Suga</span></div>
-        <div class="moment-frame"><img src="assets/images/jhope.jpg" alt="" loading="lazy"/><span class="frame-cap">J-Hope</span></div>
-        <div class="moment-frame"><img src="assets/images/jimin.jpg" alt="" loading="lazy"/><span class="frame-cap">Jimin</span></div>
-        <div class="moment-frame"><img src="assets/images/v.jpg" alt="" loading="lazy"/><span class="frame-cap">V</span></div>
-        <div class="moment-frame"><img src="assets/images/jk.jpg" alt="" loading="lazy"/><span class="frame-cap">Jungkook</span></div>
-      </div>
-    </article>
-
-    <!-- ADD NEW ERA: paste a copy of any <article class="gallery-era reveal">...</article>
-         block here, then change the heading, caption, and image URLs. -->
+    </div>
   </section>
+
+
+  <!-- ============================================================
+       FULLSCREEN ERA MODAL — opens when a timeline card is clicked.
+       Populated by js/moments.js using the ERAS dataset.
+       ============================================================ -->
+  <div class="moment-modal" id="moment-modal" role="dialog"
+       aria-modal="true" aria-hidden="true" aria-labelledby="moment-title">
+    <div class="moment-modal-frame">
+      <button class="moment-modal-close" type="button" aria-label="Close">Close ✕</button>
+
+      <div class="moment-modal-grid">
+        <figure class="moment-modal-feature">
+          <img id="moment-feature-img" src="" alt="" />
+        </figure>
+
+        <div class="moment-modal-body">
+          <span class="moment-modal-era" id="moment-era">Era —</span>
+          <h3 class="moment-modal-title" id="moment-title">—</h3>
+          <span class="moment-modal-period" id="moment-period">—</span>
+          <span class="moment-modal-rule" aria-hidden="true"></span>
+          <p class="moment-modal-desc" id="moment-desc">—</p>
+        </div>
+      </div>
+
+      <div class="moment-modal-thumbs" id="moment-thumbs" aria-label="Additional moments"></div>
+
+      <nav class="moment-modal-nav" aria-label="Switch era">
+        <button class="moment-modal-prev" type="button" aria-label="Previous era">◂&nbsp;&nbsp;Previous</button>
+        <span class="moment-modal-counter" id="moment-counter">— / X</span>
+        <button class="moment-modal-next" type="button" aria-label="Next era">Next&nbsp;&nbsp;▸</button>
+      </nav>
+    </div>
+  </div>
 
 
   <!-- ============================================================
@@ -870,19 +653,11 @@
 
 
   <!-- ============================================================
-       LIGHTBOX — appears when a photo is clicked
-       ============================================================ -->
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <button class="lightbox-close" aria-label="Close">Close ✕</button>
-    <img alt="" id="lightbox-img" />
-  </div>
-
-
-  <!-- ============================================================
        SCRIPTS
        ============================================================ -->
   <script src="js/main.js"></script>
   <script src="js/video-modal.js"></script>
+  <script src="js/moments.js"></script>
   <script src="js/wishes.js"></script>
 
 </body>
