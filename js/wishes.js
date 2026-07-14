@@ -1,92 +1,37 @@
 /* ============================================================
    A JOURNEY THROUGH JIMIN — WISHES WALL
    ------------------------------------------------------------
-   A simple digital guestbook. Wishes are saved in the visitor's
-   own browser via localStorage — nothing is sent to any server.
-   Each visitor sees their own wishes (perfect for a fan tribute
-   that runs from a static host like GitHub Pages or Netlify).
-
-   To clear all wishes on this device, open the browser console
-   and run:    localStorage.removeItem('jiminWishes')
+   Wishes live in the shared Firestore collection `letters` and
+   stream in live via onSnapshot, so every visitor sees the same
+   wall. The only local state is `jiminWishOwners` — a list of
+   doc IDs this browser posted, used to show the Delete button
+   only on the author's own wishes.
    ============================================================ */
+
+import { db } from "./firebase.js";
+import {
+  collection, addDoc, deleteDoc, doc,
+  onSnapshot, query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 (function () {
   'use strict';
 
-  const STORAGE_KEY = 'jiminWishes';
+  const OWNER_KEY = 'jiminWishOwners';
 
-  const form         = document.getElementById('wishes-form');
-  const nameEl       = document.getElementById('wish-name');
-  const textEl       = document.getElementById('wish-text');
-  const grid         = document.getElementById('wishes-grid');
-  const imageInput   = document.getElementById('wish-image');
-  const previewWrap  = document.getElementById('wish-image-preview');
-  const previewImg   = document.getElementById('wish-image-preview-img');
-  const clearBtn     = document.getElementById('wish-image-clear');
+  const form   = document.getElementById('wishes-form');
+  const nameEl = document.getElementById('wish-name');
+  const textEl = document.getElementById('wish-text');
+  const grid   = document.getElementById('wishes-grid');
 
   if (!form || !textEl || !grid) return;
 
-  const MAX_EDGE = 1000;
-  const JPEG_Q   = 0.8;
-
-  let pendingImage = null;
-
-  function resizeImageFile(file) {
-    return new Promise(function (resolve, reject) {
-      const reader = new FileReader();
-      reader.onerror = reject;
-      reader.onload  = function () {
-        const img = new Image();
-        img.onerror = reject;
-        img.onload  = function () {
-          const scale = Math.min(1, MAX_EDGE / Math.max(img.width, img.height));
-          const w = Math.round(img.width * scale);
-          const h = Math.round(img.height * scale);
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', JPEG_Q));
-        };
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  if (imageInput) {
-    imageInput.addEventListener('change', function () {
-      const file = imageInput.files && imageInput.files[0];
-      if (!file) {
-        pendingImage = null;
-        if (previewWrap) previewWrap.hidden = true;
-        return;
-      }
-      resizeImageFile(file).then(function (dataUrl) {
-        pendingImage = dataUrl;
-        if (previewImg)  previewImg.src = dataUrl;
-        if (previewWrap) previewWrap.hidden = false;
-      }).catch(function () {
-        pendingImage = null;
-        if (previewWrap) previewWrap.hidden = true;
-      });
-    });
-  }
-
-  if (clearBtn) {
-    clearBtn.addEventListener('click', function () {
-      pendingImage = null;
-      if (imageInput)  imageInput.value = '';
-      if (previewWrap) previewWrap.hidden = true;
-      if (previewImg)  previewImg.removeAttribute('src');
-    });
-  }
-
   /* ----------------------------------------------------------
-     Load + Save
+     Owner tracking (per-browser, so only the author sees Delete)
      ---------------------------------------------------------- */
-  function loadWishes() {
+  function loadOwners() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(OWNER_KEY);
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed : [];
@@ -95,19 +40,25 @@
     }
   }
 
-  function saveWishes(arr) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
-    } catch (_) {
-      /* Storage might be full or disabled — fail silently. */
-    }
+  function saveOwner(id) {
+    const owners = loadOwners();
+    if (!owners.includes(id)) owners.push(id);
+    try { localStorage.setItem(OWNER_KEY, JSON.stringify(owners)); } catch (_) {}
+  }
+
+  function removeOwner(id) {
+    const owners = loadOwners().filter(function (x) { return x !== id; });
+    try { localStorage.setItem(OWNER_KEY, JSON.stringify(owners)); } catch (_) {}
+  }
+
+  function isOwner(id) {
+    return loadOwners().indexOf(id) !== -1;
   }
 
   /* ----------------------------------------------------------
      Render
      ---------------------------------------------------------- */
-  function renderWishes() {
-    const wishes = loadWishes();
+  function renderWishes(wishes) {
     grid.innerHTML = '';
 
     if (wishes.length === 0) {
@@ -118,45 +69,53 @@
       return;
     }
 
-    /* Newest first — feels like a fresh top of the wall. */
-    wishes.slice().reverse().forEach(function (w) {
+    wishes.forEach(function (w) {
       const card = document.createElement('article');
       card.className = 'wish-card';
-
-      if (w.image) {
-        const pic = document.createElement('img');
-        pic.className = 'wish-image';
-        pic.src = w.image;
-        pic.alt = '';
-        pic.loading = 'lazy';
-        card.appendChild(pic);
-      }
 
       const body = document.createElement('div');
       body.className = 'wish-text';
       /* textContent (never innerHTML) — keeps user input XSS-safe. */
-      body.textContent = w.wish;
+      body.textContent = w.message || w.wish || '';
       card.appendChild(body);
 
       const meta = document.createElement('div');
       meta.className = 'wish-meta';
 
       const name = document.createElement('span');
-      name.textContent = w.name ? '— ' + w.name : '— Anonymous';
+      const who = w.name ? '— ' + w.name : '— Anonymous';
+      name.textContent = w.country ? who + ' · ' + w.country : who;
 
       const date = document.createElement('span');
-      try {
-        const d = new Date(w.ts);
+      const raw = w.createdAt || w.ts;
+      let d = null;
+      if (raw && typeof raw.toDate === 'function') d = raw.toDate();
+      else if (raw) d = new Date(raw);
+      if (d && !isNaN(d.getTime())) {
         date.textContent = d.toLocaleDateString(undefined, {
           day: '2-digit', month: 'short', year: 'numeric'
         });
-      } catch (_) {
+      } else {
         date.textContent = '';
       }
 
       meta.appendChild(name);
       meta.appendChild(date);
       card.appendChild(meta);
+
+      if (isOwner(w.id)) {
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'wish-delete';
+        del.textContent = 'Delete';
+        del.addEventListener('click', function () {
+          del.disabled = true;
+          deleteDoc(doc(db, 'letters', w.id))
+            .then(function () { removeOwner(w.id); })
+            .catch(function () { del.disabled = false; });
+        });
+        card.appendChild(del);
+      }
 
       grid.appendChild(card);
     });
@@ -172,26 +131,34 @@
     const name = nameEl ? nameEl.value.trim() : '';
     if (!text) return;
 
-    const all = loadWishes();
-    const entry = {
-      name: name.slice(0, 40),
-      wish: text.slice(0, 500),
-      ts:   Date.now()
-    };
-    if (pendingImage) entry.image = pendingImage;
-    all.push(entry);
-    saveWishes(all);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) submitBtn.disabled = true;
 
-    textEl.value = '';
-    if (nameEl) nameEl.value = '';
-    if (imageInput)  imageInput.value = '';
-    pendingImage = null;
-    if (previewWrap) previewWrap.hidden = true;
-    if (previewImg)  previewImg.removeAttribute('src');
-
-    renderWishes();
+    addDoc(collection(db, 'letters'), {
+      name:      name.slice(0, 40),
+      message:   text.slice(0, 500),
+      createdAt: serverTimestamp()
+    }).then(function (ref) {
+      saveOwner(ref.id);
+      textEl.value = '';
+      if (nameEl) nameEl.value = '';
+    }).catch(function (err) {
+      console.error('Failed to send wish:', err);
+    }).finally(function () {
+      if (submitBtn) submitBtn.disabled = false;
+    });
   });
 
-  /* First render — show whatever is already saved. */
-  renderWishes();
+  /* ----------------------------------------------------------
+     Live subscription — newest first
+     ---------------------------------------------------------- */
+  const q = query(collection(db, 'letters'), orderBy('createdAt', 'desc'));
+  onSnapshot(q, function (snap) {
+    const wishes = snap.docs.map(function (d) {
+      return Object.assign({ id: d.id }, d.data());
+    });
+    renderWishes(wishes);
+  }, function (err) {
+    console.error('Wishes subscription failed:', err);
+  });
 })();

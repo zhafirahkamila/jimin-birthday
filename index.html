@@ -828,16 +828,6 @@
     <form class="wishes-form reveal" id="wishes-form" autocomplete="off">
       <input type="text" id="wish-name" maxlength="40" placeholder="Your name (or leave blank for anonymous)" />
       <textarea id="wish-text" maxlength="500" placeholder="Write your wish for Jimin..." required></textarea>
-
-      <label class="wish-image-label" for="wish-image">
-        <span class="wish-image-button">Attach a photo (optional)</span>
-        <input type="file" id="wish-image" accept="image/*" hidden />
-      </label>
-      <div class="wish-image-preview" id="wish-image-preview" hidden>
-        <img id="wish-image-preview-img" alt="Selected photo preview" />
-        <button type="button" id="wish-image-clear" aria-label="Remove selected photo">Remove</button>
-      </div>
-
       <button type="submit">Send Wish</button>
     </form>
 
@@ -933,7 +923,7 @@
   <script src="js/experience.js"></script>
   <script src="js/main.js"></script>
   <script src="js/video-modal.js"></script>
-  <script src="js/wishes.js"></script>
+  <script type="module" src="js/wishes.js"></script>
 
 </body>
 </html>
