@@ -6,32 +6,6 @@
   <meta name="description" content="A Journey Through Jimin — a cinematic black-and-white tribute exhibition for Park Jimin's birthday." />
   <title>A Journey Through Jimin</title>
 
-  <!-- ============================================================
-       HOW TO CUSTOMIZE THIS WEBSITE
-       ------------------------------------------------------------
-       PHOTOS   : search "REPLACE PHOTO" — swap the src=""
-       VIDEO    : search "REPLACE VIDEO" — change the YouTube ID
-                  on data-youtube-id="hoUkD2jxZhk"
-       TEXT     : search "EDIT TEXT" — change era titles, captions
-       NEW ERA  : search "ADD NEW ERA" — copy that whole <section>
-                  block, paste it after, and change the content
-       WISHES   : visitors write them on the page;
-                  they are saved in their own browser only
-                  (no server, no account, no internet needed).
-
-       All photos are turned black-and-white automatically by CSS,
-       so any image you use will match the film aesthetic.
-
-       FILES IN THIS PROJECT
-       ------------------------------------------------------------
-         index.html            — this file (the content)
-         css/style.css         — visual design + layout
-         css/animations.css    — film grain, dust, transitions
-         js/main.js            — loader, dust, scroll reveal, lightbox
-         js/video-modal.js     — "Watch The Journey" video player
-         js/wishes.js          — guestbook (localStorage)
-         assets/images/        — drop your own photos here (optional)
-       ============================================================ -->
 
   <!-- Google Fonts: Cormorant Garamond, Playfair Display, Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -50,6 +24,30 @@
   <div class="grain" aria-hidden="true"></div>
   <canvas id="dust" aria-hidden="true"></canvas>
   <div class="vignette" aria-hidden="true"></div>
+
+
+  <!-- ============================================================
+       NAVIGATION — fixed top nav, collapses to hamburger ≤820px
+       ============================================================ -->
+  <nav class="nav" id="nav" aria-label="Primary">
+    <a class="nav-brand" href="#opening">A Journey · Jimin</a>
+
+    <button class="nav-toggle" type="button"
+            aria-controls="nav-menu" aria-expanded="false"
+            aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-menu" id="nav-menu">
+      <li><a href="#journey">Chapter I · Journey</a></li>
+      <li><a href="#gallery">Chapter II · Gallery</a></li>
+      <li><a href="#to-jimin">Chapter III · Letter</a></li>
+      <li><a href="#wishes">Chapter IV · Wishes</a></li>
+      <li><a href="#final">Chapter V · Finale</a></li>
+    </ul>
+
+    <div class="nav-backdrop" aria-hidden="true"></div>
+  </nav>
 
   <!-- ============================================================
        MOON-PHASE SYMBOL LIBRARY
@@ -129,6 +127,30 @@
       </symbol>
     </defs>
   </svg>
+
+
+  <!-- ============================================================
+       ENTRANCE OVERLAY
+       ------------------------------------------------------------
+       The very first thing visitors see: a black gallery-style
+       gate with a gold moon and "Enter the Exhibition" CTA.
+       Tapping it fades the overlay away, starts the background
+       music (respecting browser autoplay policies), and lets the
+       existing loader cinematic play through into the hero.
+       ============================================================ -->
+  <div class="entrance" id="entrance" role="dialog" aria-modal="true"
+       aria-labelledby="entrance-cta" tabindex="-1">
+    <div class="entrance-inner">
+      <svg class="entrance-phase" aria-hidden="true" viewBox="0 0 200 200">
+        <use href="#phase-3"/>
+      </svg>
+      <div class="entrance-eyebrow">Park Jimin · 13 · October</div>
+      <button class="entrance-cta" id="entrance-cta" type="button">
+        Enter the Exhibition
+      </button>
+    </div>
+  </div>
+
 
   <!-- ============================================================
        OPENING LOADER
@@ -879,8 +901,35 @@
 
 
   <!-- ============================================================
+       BACKGROUND MUSIC
+       ------------------------------------------------------------
+       SWAP MUSIC HERE: replace the src below with your own file.
+       Suggested: ambient/instrumental, ~2–4 MB, seamless loop, no vocals.
+       You can use any audio format the browser supports (mp3, ogg, m4a).
+       If you rename the file, update the src attribute to match.
+       ============================================================ -->
+  <audio id="bg-audio" src="assets/audio/promise.mp3" loop preload="auto"></audio>
+
+  <!-- Custom elegant music control (no native player UI).
+       Fixed bottom-right. Tap to play/pause. -->
+  <button class="audio-toggle" id="audio-toggle" type="button"
+          data-playing="false"
+          aria-label="Play music" aria-pressed="false">
+    <span class="audio-toggle-halo" aria-hidden="true"></span>
+    <svg class="audio-icon audio-icon-pause" viewBox="0 0 20 20" aria-hidden="true">
+      <rect x="6"  y="4" width="2.4" height="12" rx="1"/>
+      <rect x="11.6" y="4" width="2.4" height="12" rx="1"/>
+    </svg>
+    <svg class="audio-icon audio-icon-play" viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M6.5 4.5 L15 10 L6.5 15.5 Z"/>
+    </svg>
+  </button>
+
+
+  <!-- ============================================================
        SCRIPTS
        ============================================================ -->
+  <script src="js/experience.js"></script>
   <script src="js/main.js"></script>
   <script src="js/video-modal.js"></script>
   <script src="js/wishes.js"></script>

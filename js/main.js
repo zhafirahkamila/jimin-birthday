@@ -19,15 +19,30 @@
 
 
   /* ----------------------------------------------------------
-     1. LOADER — fade out shortly after the page paints.
-        Bumped to 2400ms so the 5 moon phases have time to fade
-        in (last one lands at ~1.0s, +1.2s breathing room).
+     1. LOADER — fade out shortly after the visitor "enters".
+        The countdown starts when js/experience.js dispatches the
+        `experience:entered` event (right when the entrance overlay
+        begins fading). If the entrance overlay is missing from the
+        DOM, experience.js dispatches the event immediately on
+        DOMContentLoaded, so behavior stays the same.
+        2400ms lets the 5 moon phases complete their fade-in
+        (last one lands at ~1.0s, +1.2s breathing room).
      ---------------------------------------------------------- */
-  window.addEventListener('load', function () {
+  let loaderStarted = false;
+  function startLoaderCountdown() {
+    if (loaderStarted) return;
+    loaderStarted = true;
     setTimeout(function () {
       const loader = document.getElementById('loader');
       if (loader) loader.classList.add('fade');
     }, prefersReduced ? 200 : 2400);
+  }
+  document.addEventListener('experience:entered', startLoaderCountdown, { once: true });
+  // Safety net: if experience.js is missing, kick off after `load`.
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      if (!loaderStarted) startLoaderCountdown();
+    }, 100);
   });
 
 

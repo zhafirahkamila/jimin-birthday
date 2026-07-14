@@ -154,6 +154,39 @@
 
 
 /* ============================================================
+   ENTRANCE + AUDIO KEYFRAMES
+   ============================================================ */
+
+/* Entrance moon: soft breathing glow while overlay is up. */
+@keyframes entrancePhaseBreath {
+  0%, 100% {
+    opacity: .78;
+    filter:
+      sepia(1) saturate(2.4) hue-rotate(-8deg) brightness(.98)
+      drop-shadow(0 0 22px var(--gold-soft));
+  }
+  50% {
+    opacity: 1;
+    filter:
+      sepia(1) saturate(2.6) hue-rotate(-8deg) brightness(1.05)
+      drop-shadow(0 0 38px var(--gold-soft));
+  }
+}
+
+/* Entrance content: gentle fade + rise on first paint. */
+@keyframes entranceContentIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Audio button halo: a slow, ambient pulse while music plays. */
+@keyframes audioHaloPulse {
+  0%, 100% { transform: scale(1);    opacity: .35; }
+  50%      { transform: scale(1.14); opacity: .0;  }
+}
+
+
+/* ============================================================
    REDUCED MOTION — respect the system setting
    ------------------------------------------------------------
    Anyone with "Reduce Motion" turned on sees the same content
@@ -173,4 +206,9 @@
   .moon-phase-row .phase { opacity: 1 !important; transform: none !important; }
   .final-step { opacity: 1 !important; transform: none !important; }
   .hero-phase { opacity: .3 !important; }
+  /* Entrance / audio / nav: no motion, but audio playback still works. */
+  .entrance-phase       { animation: none; }
+  .entrance-inner       { animation: none; }
+  .audio-toggle-halo    { animation: none; }
+  .nav, .audio-toggle   { transition: none; }
 }
